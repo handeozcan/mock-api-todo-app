@@ -13,12 +13,13 @@ import {
 } from "@nextui-org/react";
 import { toast } from "react-toastify";
 import { DeleteTodo, GetTodos, UpdateTodo } from "../api/http/todosRequest";
+import { GetPhotos } from "../api/http/unsplashRequest";
 import { DeleteIcon } from "./icons/deleteIcon";
 import { IconButton } from "./icons/IconButton";
 import { EditIcon } from "./icons/editIcon";
 import { EyeIcon } from "./icons/eyeIcon";
 
-const TodoCard = ({ item, setTodos, setLoading, photos }) => {
+const TodoCard = ({ item, setTodos, setLoading }) => {
   const [visible, setVisible] = useState(false);
   const [content, setContent] = useState(item.content);
   const [completed, setCompleted] = useState(null);
@@ -34,9 +35,9 @@ const TodoCard = ({ item, setTodos, setLoading, photos }) => {
   const handleDeleteTodo = (id) => {
     setLoading(true);
     DeleteTodo(id)
-      .then((res) => console.log(res))
+      .then((res) => notify("Deleting"))
       .catch((err) => {
-        console.log(err);
+        notify("Upss somethings went wrong")
       })
       .finally(() => {
         GetTodos().then((res) => setTodos(res.data));
@@ -50,9 +51,9 @@ const TodoCard = ({ item, setTodos, setLoading, photos }) => {
       isCompleted: !item.isCompleted,
     };
     UpdateTodo(id, query)
-      .then((res) => console.log(res))
+      .then((res) => notify("Updating"))
       .catch((err) => {
-        console.log(err);
+        notify("Upss somethings went wrong")
       })
       .finally(() => {
         GetTodos().then((res) => setTodos(res.data));
@@ -65,16 +66,37 @@ const TodoCard = ({ item, setTodos, setLoading, photos }) => {
       isCompleted: completed === null ? item.isCompleted : completed,
       content: content === "" ? item.content : content,
     };
-    UpdateTodo(id, query)
-      .then((res) => console.log(res))
+    GetPhotos(query.content).then((res) => {
+      UpdateTodo(id, {
+        isCompleted: completed === null ? item.isCompleted : completed,
+      content: content === "" ? item.content : content,
+      imgUrl:res.data.results[Math.floor(Math.random() * 10)].urls.regular
+      })
+      .then((res) => notify("Updating"))
       .catch((err) => {
-        console.log(err);
+        notify("Upss somethings went wrong")
       })
       .finally(() => {
         GetTodos().then((res) => setTodos(res.data));
         notify("Updated");
       });
-      setVisible(false)
+    }).catch((err) => {
+      UpdateTodo(id, {
+        isCompleted: completed === null ? item.isCompleted : completed,
+      content: content === "" ? item.content : content,
+      imgUrl:"https://nextui.org/images/card-example-6.jpeg"
+      })
+      .then((res) => notify("Updating"))
+      .catch((err) => {
+        notify("Upss somethings went wrong")
+      })
+      .finally(() => {
+        GetTodos().then((res) => setTodos(res.data));
+        notify("Updated");
+      });
+    })
+    
+    setVisible(false);
   };
   return (
     <>
@@ -82,7 +104,9 @@ const TodoCard = ({ item, setTodos, setLoading, photos }) => {
         <Card.Header css={{ position: "absolute", zIndex: 1, top: 5 }}>
           <Col>
             <Tooltip
-              content={item.isCompleted === true ? "Completed" : "Not Completed"}
+              content={
+                item.isCompleted === true ? "Completed" : "Not Completed"
+              }
               color={item.isCompleted === true ? "success" : "error"}
             >
               <Badge
@@ -91,17 +115,14 @@ const TodoCard = ({ item, setTodos, setLoading, photos }) => {
                 variant="points"
               />
             </Tooltip>
-
-            <Text css={{
-               maxWidth:"200px"
-            }} h3 color="black">
+            <Badge enableShadow disableOutline>
               {item.content}
-            </Text>
+            </Badge>
           </Col>
         </Card.Header>
         <Card.Body css={{ p: 0 }}>
           <Card.Image
-            src={photos}
+            src={item.imgUrl ? item.imgUrl : "https://nextui.org/images/card-example-6.jpeg"}
             width="100%"
             height={300}
             objectFit="cover"
@@ -124,7 +145,11 @@ const TodoCard = ({ item, setTodos, setLoading, photos }) => {
                 <EditIcon size={30} fill="#16181A" />
               </IconButton>
             </Tooltip>
-            <Tooltip content={item.isCompleted === true ? "Do UnCompleted" : "Do Completed"}>
+            <Tooltip
+              content={
+                item.isCompleted === true ? "Do UnCompleted" : "Do Completed"
+              }
+            >
               <IconButton
                 css={{ ml: "20px" }}
                 onClick={() => handleSetCompleted(item.id)}
@@ -152,12 +177,12 @@ const TodoCard = ({ item, setTodos, setLoading, photos }) => {
         onClose={closeHandler}
       >
         <Modal.Header>
-          <Text id="modal-title" size={18}>
-            Welcome to
+         
+          
             <Text b size={18}>
-              NextUI
+            Edit Todo 
             </Text>
-          </Text>
+          
         </Modal.Header>
         <Modal.Body>
           <Input

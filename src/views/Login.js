@@ -4,14 +4,14 @@ import { Grid, Card, Text, useTheme, Input, Button } from "@nextui-org/react";
 const Login = () => {
   const { theme } = useTheme();
 
-  const [email, setEmail] = useState("");
+  const [userName, setuserName] = useState("");
   const [password, setPassword] = useState("");
 
 
 
   const handleLogin = () => {
     const user = {
-        email,
+        userName,
         password,
       };
     localStorage.setItem("token",JSON.stringify(user))
@@ -42,11 +42,11 @@ const Login = () => {
               clearable
               bordered
               shadow={true}
-              type="email"
-              label="Email"
-              placeholder="Enter your Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              label="Username"
+              placeholder="Enter your Username"
+              value={userName}
+              onChange={(e) => setuserName(e.target.value)}
             />
             <Input.Password
               css={{

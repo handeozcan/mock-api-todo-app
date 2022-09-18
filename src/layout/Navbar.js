@@ -1,11 +1,20 @@
 import React from "react";
-import { Navbar, Avatar, Text, Button, useTheme } from "@nextui-org/react";
+import {
+  Navbar,
+  Avatar,
+  Text,
+  Button,
+  useTheme,
+  Tooltip,
+} from "@nextui-org/react";
 import useDarkMode from "use-dark-mode";
-import { AcmeLogo } from "../components/icons/logo";
+import useLocalStorage from "../hooks/useLocalStorage";
 import { MoonIcon } from "../components/icons/moon";
 import { SunIcon } from "../components/icons/sun";
+import { LogoutIcon } from "../components/icons/logoutIcon";
 
- const NavbarComponent = () => {
+const NavbarComponent = () => {
+  const token = useLocalStorage("token");
   const darkMode = useDarkMode(false);
   const { theme } = useTheme();
 
@@ -13,9 +22,9 @@ import { SunIcon } from "../components/icons/sun";
   return (
     <Navbar isBordered variant={variant}>
       <Navbar.Brand>
-        <AcmeLogo />
-        <Text b color="inherit" hideIn="xs">
-          HE
+        <img width={36} height={36} src="./task.png" alt="Logo"/>
+        <Text css={{ml:"$4"}} b color="inherit" hideIn="xs">
+         TODO APP
         </Text>
       </Navbar.Brand>
 
@@ -42,20 +51,36 @@ import { SunIcon } from "../components/icons/sun";
               alignItems: "center",
             }}
           >
-            <Avatar text="H" size="md" color="gradient" textColor="white" />
+            <Avatar
+              text={token[0].userName.split("")[0]}
+              size="md"
+              color="gradient"
+              textColor="white"
+            />
             <Text
               css={{
                 margin: "$5",
                 fontWeight: "$bold",
               }}
             >
-              Hande Özcan
+              {token[0].userName}
             </Text>
+            <Tooltip content="Logout" color="primary">
+              <Button
+                onClick={() => {
+                  localStorage.removeItem("token");
+                  window.location.reload()
+                }}
+                css={{background:"transparent"}}
+                auto
+                icon={<LogoutIcon fill={theme.colors.gray800.value} filled />}
+              />
+            </Tooltip>
           </div>
         </Navbar.Item>
       </Navbar.Content>
     </Navbar>
   );
-}
+};
 
-export default NavbarComponent
+export default NavbarComponent;

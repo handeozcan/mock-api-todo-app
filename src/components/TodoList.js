@@ -15,9 +15,8 @@ import { GetTodos, AddTodo } from "../api/http/todosRequest";
 import {GetPhotos} from "../api/http/unsplashRequest"
 
 const TodoList = () => {
-  const { theme } = useTheme();
+  const { type, theme } = useTheme();
   const [todos, setTodos] = useState([]);
-  const [photos,setPhotos] = useState([])
   const [content, setContent] = useState("");
   const [isLoading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,29 +26,54 @@ const TodoList = () => {
   const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
   const currentTodos = todos.slice(indexOfFirstTodo, indexOfLastTodo);
 
+  const SortedArray = todos.sort((a,b) => b.id - a.id);
+ // console.log(SortedArray)
+
   const notify = (proccess) => toast(proccess);
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      handleAddTodo()
+    }
+  }
 
   const handleAddTodo = () => {
     setLoading(true);
-    const query = {
-      content,
-    };
-    AddTodo(query)
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err))
+     GetPhotos(content).then((res) =>  
+     AddTodo({content:content,imgUrl:res.data.results[Math.floor(Math.random() * 10)].urls.regular})
+     .then((res) => notify("Adding"))
+     .catch((err) => notify("Upss somethings went wrong"))
+     .finally(() => {
+       GetTodos()
+         .then((res) => {
+           setTodos(res.data);
+         })
+         .catch((err) => {
+          notify("Upss somethings went wrong");
+         })
+         .finally(() => {
+           setLoading(false);
+           notify("Success");
+         });
+     })).catch((err) => {
+      AddTodo({content:content,imgUrl:"https://nextui.org/images/card-example-6.jpeg"})
+      .then((res) => notify("Adding"))
+      .catch((err) => notify("Upss somethings went wrong"))
       .finally(() => {
         GetTodos()
           .then((res) => {
             setTodos(res.data);
           })
           .catch((err) => {
-            console.log(err);
+            notify("Upss somethings went wrong");
           })
           .finally(() => {
             setLoading(false);
             notify("Success");
           });
-      });
+      })
+     })
+   
     setContent("");
   };
 
@@ -62,7 +86,7 @@ const TodoList = () => {
         console.log(err);
       });
 
-      GetPhotos().then((res) => setPhotos(res.data.urls.regular))
+     
   }, []);
 
   if (todos.length > 0) {
@@ -103,6 +127,7 @@ const TodoList = () => {
               labelPlaceholder="Content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              onKeyDown={handleKeyDown}
             />
             <Button
               onClick={handleAddTodo}
@@ -134,7 +159,6 @@ const TodoList = () => {
             {currentTodos.map((item) => (
               <Grid key={item.id} xs={10} sm={6} md={3}>
                 <TodoCard
-                  photos={photos}
                   setLoading={setLoading}
                   setTodos={setTodos}
                   item={item}
@@ -146,7 +170,7 @@ const TodoList = () => {
         </Box>
         <ToastContainer
           position="bottom-right"
-          autoClose={5000}
+          autoClose={1500}
           hideProgressBar={false}
           newestOnTop={false}
           closeOnClick
@@ -154,6 +178,7 @@ const TodoList = () => {
           pauseOnFocusLoss
           draggable
           pauseOnHover
+          theme={type === "dark" ? "dark" : "light"}
         />
       </Suspense>
     );

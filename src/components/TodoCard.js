@@ -63,7 +63,7 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
-      handleUpdateTodo()
+      handleUpdateTodo(item.id)
     }
   }
 

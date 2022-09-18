@@ -24,9 +24,9 @@ const TodoList = () => {
 
   const indexOfLastTodo = currentPage * todosPerPage;
   const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
-  const currentTodos = todos.slice(indexOfFirstTodo, indexOfLastTodo);
+  const currentTodos = todos.sort((a,b) => b.id - a.id).slice(indexOfFirstTodo, indexOfLastTodo);
 
-  const SortedArray = todos.sort((a,b) => b.id - a.id);
+
  // console.log(SortedArray)
 
   const notify = (proccess) => toast(proccess);

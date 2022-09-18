@@ -16,7 +16,7 @@ const Login = () => {
         userName,
         password,
       };
-      if(user.userName.trim().length >2 && user.password.trim().length > 3) {
+      if(user.userName.trim().length >2 && user.password.trim().length > 2) {
         localStorage.setItem("token",JSON.stringify(user))
          window.location.reload()
       }else {

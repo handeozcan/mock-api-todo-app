@@ -61,6 +61,12 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
       });
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      handleUpdateTodo()
+    }
+  }
+
   const handleUpdateTodo = (id) => {
     const query = {
       isCompleted: completed === null ? item.isCompleted : completed,
@@ -194,6 +200,7 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
             placeholder="Content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
           <Row justify="space-between">
             <Radio.Group

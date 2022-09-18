@@ -39,24 +39,9 @@ const TodoList = () => {
 
   const handleAddTodo = () => {
     setLoading(true);
-     GetPhotos(content).then((res) =>  
-     AddTodo({content:content,imgUrl:res.data.results[Math.floor(Math.random() * 10)].urls.regular})
-     .then((res) => notify("Adding"))
-     .catch((err) => notify("Upss somethings went wrong"))
-     .finally(() => {
-       GetTodos()
-         .then((res) => {
-           setTodos(res.data);
-         })
-         .catch((err) => {
-          notify("Upss somethings went wrong");
-         })
-         .finally(() => {
-           setLoading(false);
-           notify("Success");
-         });
-     })).catch((err) => {
-      AddTodo({content:content,imgUrl:"https://nextui.org/images/card-example-6.jpeg"})
+    if(content.trim().length > 2){
+      GetPhotos(content).then((res) =>  
+      AddTodo({content:content,imgUrl:res.data.results[Math.floor(Math.random() * 10)].urls.regular})
       .then((res) => notify("Adding"))
       .catch((err) => notify("Upss somethings went wrong"))
       .finally(() => {
@@ -65,14 +50,33 @@ const TodoList = () => {
             setTodos(res.data);
           })
           .catch((err) => {
-            notify("Upss somethings went wrong");
+           notify("Upss somethings went wrong");
           })
           .finally(() => {
             setLoading(false);
             notify("Success");
           });
+      })).catch((err) => {
+       AddTodo({content:content,imgUrl:"https://nextui.org/images/card-example-6.jpeg"})
+       .then((res) => notify("Adding"))
+       .catch((err) => notify("Upss somethings went wrong"))
+       .finally(() => {
+         GetTodos()
+           .then((res) => {
+             setTodos(res.data);
+           })
+           .catch((err) => {
+             notify("Upss somethings went wrong");
+           })
+           .finally(() => {
+             setLoading(false);
+             notify("Success");
+           });
+       })
       })
-     })
+    }else {
+      notify("Todo content length min 3 characters")
+    }
    
     setContent("");
   };

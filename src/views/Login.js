@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Grid, Card, Text, useTheme, Input, Button } from "@nextui-org/react";
+import { ToastContainer, toast } from "react-toastify";
 
 const Login = () => {
-  const { theme } = useTheme();
+  const { type, theme } = useTheme();
 
   const [userName, setuserName] = useState("");
   const [password, setPassword] = useState("");
+  const notify = (proccess) => toast(proccess);
 
 
 
@@ -14,8 +16,12 @@ const Login = () => {
         userName,
         password,
       };
-    localStorage.setItem("token",JSON.stringify(user))
-    window.location.reload()
+      if(user.userName.trim().length >2 && user.password.trim().length > 3) {
+        localStorage.setItem("token",JSON.stringify(user))
+         window.location.reload()
+      }else {
+        notify("Username/Password length min 3 characters")
+      } 
   };
 
   return (
@@ -86,6 +92,18 @@ const Login = () => {
           </Card.Footer>
         </Card>
       </Grid>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={1500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme={type === "dark" ? "dark" : "light"}
+      />
     </Grid.Container>
   );
 };

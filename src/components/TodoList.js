@@ -93,7 +93,7 @@ const TodoList = () => {
      
   }, []);
 
-  if (todos.length > 0) {
+  if (todos) {
     return (
       <Suspense
         fallback={
@@ -187,7 +187,7 @@ const TodoList = () => {
       </Suspense>
     );
   }
-  if (todos.length === 0 || isLoading === true) {
+  if (isLoading === true) {
     return (
       <Box
         css={{
@@ -204,8 +204,7 @@ const TodoList = () => {
         />
       </Box>
     );
-  } else {
-  }
+  } 
 };
 
 export default TodoList;
